@@ -1,0 +1,12 @@
+{
+  "name": "liquidity-mining",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:marscolony-io/liquidity-mining.git",
+  "author": "crystalbit <crystalbit@mail.ru>",
+  "license": "MIT",
+  "dependencies": {
+    "@openzeppelin/contracts": "^4.4.2",
+    "@truffle/hdwallet-provider": "^2.0.1"
+  }
+}
