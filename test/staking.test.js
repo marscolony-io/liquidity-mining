@@ -30,6 +30,8 @@ contract('Staking', (accounts) => {
   afterEach(async () => {
     console.log('user1 slp', ((await lp.balanceOf(user1)) * 1e-18).toFixed(3), 'clny', ((await clny.balanceOf(user1)) * 1e-18).toFixed(3));
     console.log('user2 slp', ((await lp.balanceOf(user2)) * 1e-18).toFixed(3), 'clny', ((await clny.balanceOf(user2)) * 1e-18).toFixed(3));
+    const lrt = await chef.lastRewardTime();
+    console.log(new Date(lrt * 1000));
   });
 
   it('Approve, transfer', async () => {

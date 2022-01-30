@@ -38,7 +38,7 @@ contract ColonyChef is Ownable {
 
 
     IERC20 public lpToken; // Address of LP token contract.
-    uint256 lastRewardTime; // Last time number that CLNYs distribution occurs.
+    uint256 public lastRewardTime; // Last time number that CLNYs distribution occurs.
     uint256 accColonyPerShare; // Accumulated CLNYs per share, times 1e12. See below.
     // The CLNY TOKEN!
     IERC20 public clnyToken;
@@ -48,8 +48,6 @@ contract ColonyChef is Ownable {
     uint256 public clnyPerDay;
     // Info of each user that stakes LP tokens.
     mapping(address => UserInfo) public userInfo;
-    // The time when CLNY distribution starts.
-    uint256 public startTime;
 
     event Deposit(address indexed user, uint256 amount);
     event Withdraw(address indexed user, uint256 amount);
@@ -66,7 +64,8 @@ contract ColonyChef is Ownable {
         lpToken = _lpToken;
         clnyPool = _clnyPool;
         clnyPerDay = _clnyPerDay;
-        startTime = _startTime;
+        // The time when CLNY distribution starts.
+        lastRewardTime = _startTime;
     }
 
     // View function to see pending ColonyToken on frontend.
