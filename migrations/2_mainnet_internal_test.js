@@ -10,6 +10,8 @@ module.exports = async (deployer, network, accounts) => {
   //   '0xcd818813f038a4d1a27c84d24d74bbc21551fa83', // slp
   //   '0x3A47a5be317DCF439F91D0A45716B64547F21bc1', // cnly wallet
   //   web3.utils.toWei('1'),
-  //   latestBlock.timestamp + 60 * 60 * 9,
+  //   latestBlock.timestamp + 60 * 15,
   // );
 };
+
+// later we need to approve all clny from clny wallet to chef

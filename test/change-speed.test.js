@@ -69,7 +69,7 @@ contract('Changing price and staking', (accounts) => {
     assert(providers.includes(user1) && providers.includes(user2) && providers.includes(user3));
     // A MUST! Fix rewards for all providers manually before changing speed
     await chef.fixRewards(providers);
-    await chef.changeClnyPerDay(ether('4200'), { gas: 400_000 });
+    await chef.changeClnyPerSecond(ether(new BN(4200)).div(new BN(86400)), { gas: 400_000 });
   });
 
   it('User2 unstakes 2 slp at 2.5 days', async () => {
@@ -91,7 +91,7 @@ contract('Changing price and staking', (accounts) => {
 
     // A MUST! Fix rewards for all providers manually before changing speed
     await chef.fixRewards(providers);
-    await chef.changeClnyPerDay(ether('3150'), { gas: 400_000 });
+    await chef.changeClnyPerSecond(ether(new BN(3150)).div(new BN(86400)), { gas: 400_000 });
   });
 
   it('User1 stakes 3 slp at 4 day', async () => {
@@ -105,5 +105,8 @@ contract('Changing price and staking', (accounts) => {
 
   it('User3 unstakes 4 slp at 5 days', async () => {
     await chef.withdraw(ether('4'), { from: user3 });
+    // user1 slp 100.000 clny 2370.255
+    // user2 slp 100.000 clny 1200.076
+    // user3 slp 100.000 clny 10081.212
   });
 });
