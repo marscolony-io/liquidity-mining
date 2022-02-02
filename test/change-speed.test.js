@@ -31,6 +31,12 @@ contract('Changing price and staking', (accounts) => {
     console.log('user3 slp', ((await lp.balanceOf(user3)) * 1e-18).toFixed(3), 'clny', ((await clny.balanceOf(user3)) * 1e-18).toFixed(3));
   });
 
+  // chef clny balance shall be 0
+  after(async () => {
+    const balance = await clny.balanceOf(chef.address);
+    console.log(balance * 1e-18)
+  });
+
   it('Approve, transfer', async () => {
     await clny.approve(chef.address, constants.MAX_UINT256, { from: ownerOfAll });
     await lp.transfer(user1, ether('100'), { from: ownerOfAll });

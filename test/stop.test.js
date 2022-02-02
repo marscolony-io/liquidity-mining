@@ -33,6 +33,12 @@ contract('Changing price and staking', (accounts) => {
     console.log('user5 slp', ((await lp.balanceOf(user5)) * 1e-18).toFixed(3), 'clny', ((await clny.balanceOf(user5)) * 1e-18).toFixed(3));
   });
 
+  // chef clny balance shall be 0
+  after(async () => {
+    const balance = await clny.balanceOf(chef.address);
+    console.log(balance * 1e-18)
+  });
+
   it('Approve, transfer', async () => {
     await clny.approve(chef.address, constants.MAX_UINT256, { from: ownerOfAll });
     await lp.transfer(user1, ether('100'), { from: ownerOfAll });
@@ -109,6 +115,18 @@ contract('Changing price and staking', (accounts) => {
     // A MUST! Fix rewards for all providers manually before changing speed
     await chef.fixRewards(providers);
     await chef.changeClnyPerDay(ether('0'), { gas: 400_000 });
+    await chef.fixRewards(providers);
+    // await chef.changeClnyPerDay(ether('10'), { gas: 400_000 });
+    // await chef.fixRewards(providers);
+    // await chef.changeClnyPerDay(ether('0'), { gas: 400_000 });
+    // await chef.fixRewards(providers);
+
+    await chef.withdraw(0, { from: user1 });
+
+    await chef.fixRewards(providers);
+    console.log(await chef.pendingClny(user1))
+    console.log(await chef.pendingClny(user2))
+    console.log(await chef.pendingClny(user3))
   });
 
   it('User1 unstakes 2 slp at 4.5 day', async () => {

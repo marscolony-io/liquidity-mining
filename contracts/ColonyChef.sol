@@ -25,7 +25,7 @@ contract ColonyChef is Ownable {
     struct UserInfo {
         uint256 amount; // How many LP tokens the user has provided.
         uint256 rewardDebt; // Reward debt. See explanation below.
-        uint256 fixedReward; // to store what we should pay to the user (in case of changing clnyPerDay)
+        uint256 toPay; // stored info to pay
         //
         // We do some fancy math here. Basically, any point in time, the amount of ColonyToken
         // entitled to a user but is pending to be distributed is:
@@ -41,8 +41,8 @@ contract ColonyChef is Ownable {
 
 
     IERC20 public lpToken; // Address of LP token contract.
-    uint256 lastRewardTime; // Last time number that CLNYs distribution occurs.
-    uint256 accColonyPerShare; // Accumulated CLNYs per share, times 1e12. See below.
+    uint256 public lastRewardTime; // Last time number that CLNYs distribution occurs.
+    uint256 public accColonyPerShare; // Accumulated CLNYs per share, times 1e12. See below.
     // The CLNY TOKEN!
     IERC20 public clnyToken;
     // Liquidity pool - funds should be approved for this contract
@@ -97,7 +97,7 @@ contract ColonyChef is Ownable {
             uint256 clnyReward = block.timestamp.sub(lastRewardTime).mul(clnyPerDay).div(1 days);
             _accColonyPerShare = _accColonyPerShare.add(clnyReward.mul(1e12).div(lpSupply));
         }
-        return user.amount.mul(_accColonyPerShare).div(1e12).sub(user.rewardDebt).add(user.fixedReward);
+        return user.amount.mul(_accColonyPerShare).div(1e12).sub(user.rewardDebt).add(user.toPay);
     }
 
     // Update reward variables to be up-to-date.
@@ -121,10 +121,10 @@ contract ColonyChef is Ownable {
     function deposit(uint256 _amount) public {
         UserInfo storage user = userInfo[msg.sender];
         updatePool();
-        if (user.amount > 0 || user.fixedReward > 0) {
-            uint256 pending = user.amount.mul(accColonyPerShare).div(1e12).sub(user.rewardDebt).add(user.fixedReward);
-            safeClnyTransfer(msg.sender, pending);
-            user.fixedReward = 0;
+        if (user.amount > 0 || user.toPay > 0) {
+            user.toPay = user.toPay.add( user.amount.mul(accColonyPerShare).div(1e12) ).sub(user.rewardDebt);
+            // safeClnyTransfer(msg.sender, pending);
+            // user.toPay = 0;
         }
         lpToken.safeTransferFrom(
             address(msg.sender),
@@ -146,11 +146,11 @@ contract ColonyChef is Ownable {
         UserInfo storage user = userInfo[_address];
         require(user.amount >= _amount, 'withdraw: not good');
         updatePool();
-        uint256 pending = user.amount.mul(accColonyPerShare).div(1e12).sub(user.rewardDebt).add(user.fixedReward);
+        uint256 pending = user.toPay.add( user.amount.mul(accColonyPerShare).div(1e12) ).sub(user.rewardDebt);
         safeClnyTransfer(msg.sender, pending);
         user.amount = user.amount.sub(_amount);
         user.rewardDebt = user.amount.mul(accColonyPerShare).div(1e12);
-        user.fixedReward = 0;
+        user.toPay = 0;
         if (user.amount == 0) {
             providers.remove(_address);
         }
@@ -158,22 +158,14 @@ contract ColonyChef is Ownable {
         emit Withdraw(_address, _amount);
     }
 
-    // fix user reward in userInfo
-    // should be run after updatePool
-    function _fixAfterPoolUpdate(address _address) internal {
-        UserInfo storage user = userInfo[_address];
-        uint256 pending = user.amount.mul(accColonyPerShare).div(1e12).sub(user.rewardDebt).add(user.fixedReward);
-        clnyToken.safeTransferFrom(address(clnyPool), address(this), pending.sub(user.fixedReward));
-        user.fixedReward = pending;
-        user.rewardDebt = user.amount.mul(accColonyPerShare).div(1e12);
-    }
-
     // store users' rewards without transferring them
     // needed before changing clny per day speed
     function fixRewards(address[] calldata addresses) external onlyOwner {
         updatePool();
         for (uint256 i = 0; i < addresses.length; i++) {
-            _fixAfterPoolUpdate(addresses[i]);
+            UserInfo storage user = userInfo[addresses[i]];
+            user.toPay = user.toPay.add( user.amount.mul(accColonyPerShare).div(1e12) ).sub(user.rewardDebt);
+            user.rewardDebt = user.amount.mul(accColonyPerShare).div(1e12);
         }
     }
 

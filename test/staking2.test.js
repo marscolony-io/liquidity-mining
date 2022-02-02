@@ -30,8 +30,12 @@ contract('Staking', (accounts) => {
     console.log('user4 slp', ((await lp.balanceOf(user4)) * 1e-18).toFixed(3), 'clny', ((await clny.balanceOf(user4)) * 1e-18).toFixed(3));
     console.log('user5 slp', ((await lp.balanceOf(user5)) * 1e-18).toFixed(3), 'clny', ((await clny.balanceOf(user5)) * 1e-18).toFixed(3));
     console.log('user6 slp', ((await lp.balanceOf(user6)) * 1e-18).toFixed(3), 'clny', ((await clny.balanceOf(user6)) * 1e-18).toFixed(3));
-    const lrt = await chef.lastRewardTime();
-    console.log(new Date(lrt * 1000));
+  });
+
+  // chef clny balance shall be 0
+  after(async () => {
+    const balance = await clny.balanceOf(chef.address);
+    console.log(balance * 1e-18)
   });
 
   it('Approve, transfer', async () => {
@@ -81,6 +85,22 @@ contract('Staking', (accounts) => {
 
   it('User6 unstakes 2 slp at 4 days', async () => {
     await chef.withdraw(ether('2'), { from: user6 });
+    const slp3 = await lp.balanceOf(user3) * 1e-18;
+    const clny3 = await clny.balanceOf(user3) * 1e-18;
+    const slp4 = await lp.balanceOf(user4) * 1e-18;
+    const clny4 = await clny.balanceOf(user4) * 1e-18;
+    const slp5 = await lp.balanceOf(user5) * 1e-18;
+    const clny5 = await clny.balanceOf(user5) * 1e-18;
+    const slp6 = await lp.balanceOf(user6) * 1e-18;
+    const clny6 = await clny.balanceOf(user6) * 1e-18;
+    assert(Math.round(slp3) === 100);
+    assert(Math.round(slp4) === 100);
+    assert(Math.round(slp5) === 100);
+    assert(Math.round(slp6) === 100);
+    assert(clny3 >= 150 && clny3 <= 151);
+    assert(clny4 >= 650 && clny4 <= 652);
+    assert(clny5 >= 4800 && clny5 <= 4803);
+    assert(clny5 >= 700 && clny6 <= 702);
   });
 
 });
