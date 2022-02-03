@@ -171,6 +171,10 @@ contract ColonyChef is Ownable {
         emit SetClnyPerSecond(newSpeed);
     }
 
+    function changeClnyPool(address _address) external onlyOwner {
+      clnyPool = _address;
+    }
+
     // Withdraw without caring about rewards. EMERGENCY ONLY.
     function emergencyWithdraw() public {
         UserInfo storage user = userInfo[msg.sender];
