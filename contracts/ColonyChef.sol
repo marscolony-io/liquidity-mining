@@ -165,7 +165,7 @@ contract ColonyChef is Ownable {
     }
 
     // WARNING: you should fix all rewards by fixRewards before changing clnyPerSecond
-    // WARNING: it isn't chechked as it would be a gas dependent cycle
+    // WARNING: it isn't checked as it would be a gas dependent cycle
     function changeClnyPerSecond(uint256 newSpeed) external onlyOwner {
         clnyPerSecond = newSpeed;
         emit SetClnyPerSecond(newSpeed);
