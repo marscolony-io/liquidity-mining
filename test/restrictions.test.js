@@ -43,9 +43,9 @@ contract('Restrictions', (accounts) => {
     await expectRevert(chef.fixRewards([user1, user2, user3], { from: user1 }), 'caller is not the owner');
   });
 
-  it('changeClnyPerDay - ownable', async () => {
+  it('changeClnyPerSecond - ownable', async () => {
     time.increase(60 * 60 * 24);
-    await chef.changeClnyPerDay(ether('3333'), { from: ownerOfAll });
-    await expectRevert(chef.changeClnyPerDay(ether('5555'), { from: user1 }), 'caller is not the owner');
+    await chef.changeClnyPerSecond(ether('3'), { from: ownerOfAll });
+    await expectRevert(chef.changeClnyPerSecond(ether('5'), { from: user1 }), 'caller is not the owner');
   });
 });

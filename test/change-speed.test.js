@@ -2,8 +2,6 @@ const { assert } = require('chai');
 const {
   BN,
   constants,
-  expectEvent,
-  expectRevert,
   ether,
   time,
 } = require('@openzeppelin/test-helpers');
@@ -95,16 +93,16 @@ contract('Changing price and staking', (accounts) => {
   });
 
   it('User1 stakes 3 slp at 4 day', async () => {
-    await chef.deposit(ether('3'), { from: user1 });
+    await chef.deposit(ether('3'), { from: user1, gas: 400_000 });
   });
 
   it('User1 unstakes 3 slp at 5 days', async () => {
     await time.increase(60 * 60 * 24 * 1);
-    await chef.withdraw(ether('3'), { from: user1 });
+    await chef.withdraw(ether('3'), { from: user1, gas: 400_000 });
   });
 
   it('User3 unstakes 4 slp at 5 days', async () => {
-    await chef.withdraw(ether('4'), { from: user3 });
+    await chef.withdraw(ether('4'), { from: user3, gas: 400_000 });
     // user1 slp 100.000 clny 2370.255
     // user2 slp 100.000 clny 1200.076
     // user3 slp 100.000 clny 10081.212

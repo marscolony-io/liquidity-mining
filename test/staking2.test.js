@@ -1,4 +1,4 @@
-const { assert } = require('chai');
+const { assert, expect } = require('chai');
 const {
   BN,
   constants,
@@ -97,10 +97,14 @@ contract('Staking', (accounts) => {
     assert(Math.round(slp4) === 100);
     assert(Math.round(slp5) === 100);
     assert(Math.round(slp6) === 100);
-    assert(clny3 >= 150 && clny3 <= 151);
-    assert(clny4 >= 650 && clny4 <= 652);
-    assert(clny5 >= 4800 && clny5 <= 4803);
-    assert(clny5 >= 700 && clny6 <= 702);
+    expect(clny3).to.be.above(150);
+    expect(clny3).to.be.below(155);
+    expect(clny4).to.be.above(650);
+    expect(clny4).to.be.below(665);
+    expect(clny5).to.be.above(4800);
+    expect(clny5).to.be.below(4810);
+    expect(clny6).to.be.above(700);
+    expect(clny6).to.be.below(705);
   });
 
 });
