@@ -8,7 +8,9 @@
   "dependencies": {
     "@openzeppelin/contracts": "^4.4.2",
     "@truffle/hdwallet-provider": "^2.0.1",
-    "harmony-flattener": "^1.0.1"
+    "harmony-flattener": "^1.0.1",
+    "solidity-coverage": "^0.7.20",
+    "truffle": "^5.5.4"
   },
   "devDependencies": {
     "@openzeppelin/test-helpers": "^0.5.15",

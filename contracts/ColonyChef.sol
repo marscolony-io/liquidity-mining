@@ -73,17 +73,17 @@ contract ColonyChef is Ownable {
     }
 
     // View function with providers count
-    function providerCount() view public returns (uint256) {
+    function providerCount() view external returns (uint256) {
         return providers.length();
     }
 
     // Get provider at index
-    function getProvider(uint256 index) view public returns (address) {
+    function getProvider(uint256 index) view external returns (address) {
         return providers.at(index);
     }
 
     // Get providers
-    function getProviders() view public returns (address[] memory) {
+    function getProviders() view external returns (address[] memory) {
         return providers.values();
     }
 
@@ -110,44 +110,44 @@ contract ColonyChef is Ownable {
             return;
         }
         uint256 clnyReward = (block.timestamp - lastRewardTime) * clnyPerSecond;
-        clnyToken.safeTransferFrom(address(clnyPool), address(this), clnyReward);
         accColonyPerShare = accColonyPerShare + clnyReward * 1e12 / lpSupply;
         lastRewardTime = block.timestamp;
+        clnyToken.safeTransferFrom(address(clnyPool), address(this), clnyReward);
     }
 
     // Deposit LP tokens to ColonyChef for CLNY allocation.
-    function deposit(uint256 _amount) public {
-        require(_amount >= 0, 'zero deposit');
+    function deposit(uint256 _amount) external {
+        require(_amount > 0, 'zero deposit');
         UserInfo storage user = userInfo[msg.sender];
         updatePool();
         if (user.amount > 0 || user.toPay > 0) {
             user.toPay = user.toPay + user.amount * accColonyPerShare / 1e12 - user.rewardDebt;
         }
+        user.amount = user.amount + _amount;
+        user.rewardDebt = user.amount * accColonyPerShare / 1e12;
+        providers.add(msg.sender);
         lpToken.safeTransferFrom(
             address(msg.sender),
             address(this),
             _amount
         );
-        user.amount = user.amount + _amount;
-        user.rewardDebt = user.amount * accColonyPerShare / 1e12;
-        providers.add(msg.sender);
         emit Deposit(msg.sender, _amount);
     }
 
     // Withdraw LP tokens from ColonyChef.
     // any withdraw send all harvest to the user, so withdraw(0) - just collect harvest
-    function withdraw(uint256 _amount) public {
+    function withdraw(uint256 _amount) external {
         UserInfo storage user = userInfo[msg.sender];
         require(user.amount >= _amount, 'withdraw: not good');
         updatePool();
         uint256 pending = user.toPay + user.amount * accColonyPerShare / 1e12 - user.rewardDebt;
-        safeClnyTransfer(msg.sender, pending);
         user.amount = user.amount - _amount;
         user.rewardDebt = (user.amount * accColonyPerShare) / 1e12;
         user.toPay = 0;
         if (user.amount == 0) {
             providers.remove(msg.sender);
         }
+        safeClnyTransfer(msg.sender, pending);
         lpToken.safeTransfer(msg.sender, _amount);
         emit Withdraw(msg.sender, _amount);
     }
@@ -176,21 +176,24 @@ contract ColonyChef is Ownable {
     }
 
     // Withdraw without caring about rewards. EMERGENCY ONLY.
-    function emergencyWithdraw() public {
+    function emergencyWithdraw() external {
         UserInfo storage user = userInfo[msg.sender];
-        lpToken.safeTransfer(address(msg.sender), user.amount);
-        emit EmergencyWithdraw(msg.sender, user.amount);
+        uint256 _amount = user.amount;
         user.amount = 0;
         user.rewardDebt = 0;
+        lpToken.safeTransfer(address(msg.sender), _amount);
+        emit EmergencyWithdraw(msg.sender, _amount);
     }
 
     // Safe ColonyToken transfer function, just in case if pool doesn't have enough CLNY.
     function safeClnyTransfer(address _to, uint256 _amount) internal {
         uint256 clnyBal = clnyToken.balanceOf(address(this));
+        bool result = false;
         if (_amount > clnyBal) {
-            clnyToken.transfer(_to, clnyBal);
+            result = clnyToken.transfer(_to, clnyBal);
         } else {
-            clnyToken.transfer(_to, _amount);
+            result = clnyToken.transfer(_to, _amount);
         }
+        require(result, 'transfer failed');
     }
 }

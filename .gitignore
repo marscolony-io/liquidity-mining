@@ -11,3 +11,5 @@ flattened.txt
 
 .idea
 
+coverage/
+coverage.json

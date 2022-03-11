@@ -1,4 +1,4 @@
-const { assert } = require('chai');
+const { assert, expect } = require('chai');
 const {
   BN,
   constants,
@@ -63,8 +63,13 @@ contract('Changing price and staking', (accounts) => {
   it('Manually changing reward to 4200 at 2 day', async () => {
     await time.increase(60 * 60 * 24 * 1);
     const providers = await chef.getProviders();
+    const providerCount = await chef.providerCount();
     assert(providers.length === 3);
+    assert(parseInt(providerCount) === 3);
     assert(providers.includes(user1) && providers.includes(user2) && providers.includes(user3));
+    expect(await chef.getProvider(0)).to.be.equal(user1);
+    expect(await chef.getProvider(1)).to.be.equal(user3);
+    expect(await chef.getProvider(2)).to.be.equal(user2);
     // A MUST! Fix rewards for all providers manually before changing speed
     await chef.fixRewards(providers);
     await chef.changeClnyPerSecond(ether(new BN(4200)).div(new BN(86400)), { gas: 400_000 });
