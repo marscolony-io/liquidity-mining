@@ -65,12 +65,8 @@ contract('Staking', (accounts) => {
     assert(await chef.providerCount() == 3);
   });
 
-  it('Fix rewards at 2.25 days', async () => {
-    await time.increase(60 * 60 * 6);
-    await chef.fixRewards([user1, user2, user3]);
-  });
-
   it('User3 unstakes 5 slp at 2.5 days', async () => {
+    await time.increase(60 * 60 * 6);
     await time.increase(60 * 60 * 6);
     await chef.withdraw(ether('5'), { from: user3 });
     assert(await chef.providerCount() == 2);

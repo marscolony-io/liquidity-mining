@@ -71,16 +71,12 @@ contract('Changing price and staking', (accounts) => {
   it('Set 48 clny/day 100 min later', async () => {
     await time.increase(60 * 100);
     const providers = await chef.getProviders();
-    // A MUST! Fix rewards for all providers manually before changing speed
-    await chef.fixRewards(providers);
     await chef.changeClnyPerSecond(Math.floor(ether('48') / 86400), { gas: 400_000 });
   });
 
   it('Set 6 clny/day 115 min later', async () => {
     await time.increase(60 * 115);
     const providers = await chef.getProviders();
-    // A MUST! Fix rewards for all providers manually before changing speed
-    await chef.fixRewards(providers);
     await chef.changeClnyPerSecond(Math.floor(ether('6') / 86400), { gas: 400_000 });
   });
 
@@ -100,8 +96,6 @@ contract('Changing price and staking', (accounts) => {
 
   it('Set 96 clny/day', async () => {
     const providers = await chef.getProviders();
-    // A MUST! Fix rewards for all providers manually before changing speed
-    await chef.fixRewards(providers, { gas: 400_000 });
     await chef.changeClnyPerSecond(Math.floor(ether('96') / 86400), { gas: 400_000 });
   });
 
@@ -113,8 +107,6 @@ contract('Changing price and staking', (accounts) => {
   it('Stop 85 min later', async () => {
     await time.increase(60 * 85);
     const providers = await chef.getProviders();
-    // A MUST! Fix rewards for all providers manually before changing speed
-    await chef.fixRewards(providers);
     await chef.changeClnyPerSecond(ether('0'), { gas: 400_000 });
   });
 

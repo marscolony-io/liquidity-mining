@@ -70,8 +70,6 @@ contract('Changing price and staking', (accounts) => {
     expect(await chef.getProvider(0)).to.be.equal(user1);
     expect(await chef.getProvider(1)).to.be.equal(user3);
     expect(await chef.getProvider(2)).to.be.equal(user2);
-    // A MUST! Fix rewards for all providers manually before changing speed
-    await chef.fixRewards(providers);
     await chef.changeClnyPerSecond(ether(new BN(4200)).div(new BN(86400)), { gas: 400_000 });
   });
 
@@ -92,8 +90,6 @@ contract('Changing price and staking', (accounts) => {
     assert(providers.includes(user3));
     const data = await chef.userInfo(user3);
 
-    // A MUST! Fix rewards for all providers manually before changing speed
-    await chef.fixRewards(providers);
     await chef.changeClnyPerSecond(ether(new BN(3150)).div(new BN(86400)), { gas: 400_000 });
   });
 

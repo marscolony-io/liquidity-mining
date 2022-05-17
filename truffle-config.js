@@ -14,7 +14,8 @@ module.exports = {
       gas: 5500000,        // Ropsten has a lower block limit than mainnet
       confirmations: 0,    // # of confs to wait between deployments. (default: 0)
       timeoutBlocks: 200,  // # of blocks before a deployment times out  (minimum/default: 50)
-      skipDryRun: true     // Skip dry run before migrations? (default: false for public nets )
+      skipDryRun: true,     // Skip dry run before migrations? (default: false for public nets )
+      gasPrice: 101 * 1e9,
     },
     hartest: {
       provider: () => {
@@ -30,7 +31,7 @@ module.exports = {
       provider: () => {
         return new HDWalletProvider({
           mnemonic: mnemonic.harmain,
-          providerOrUrl: 'https://harmony-0-rpc.gateway.pokt.network', // 'https://api.harmony.one',
+          providerOrUrl: 'https://api.fuzz.fi', // 'https://api.harmony.one',
           derivationPath: `m/44'/60'/0'/0/`,
           confirmations: 0,
           timeoutBlocks: 200,

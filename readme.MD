@@ -17,7 +17,6 @@
 - Only two roles: owner and user
 - The contract is `Ownable`, so there is an owner
 - Owner can: change `clnyPool`
-- Owner can: do `fixRewards` – see further
 - Owner can: `changeClnyPerSecond`
 - ^ all rights of an owner are above, no more
 - User – every wallet who provides LP tokens
@@ -26,20 +25,6 @@
 - User gets reward in CLNY to their wallet along with any withdrawal
 - User can `withdraw` 0 LP tokens – this action means just receiving a reward
 - User can `emergencyWithdraw` their LP funds – in case if there is any problem with CLNY distribution
-
-# fixRewards - wtf?
-- We decided that our mining contract should have flexible CLNY per day (and so CLNY per second) reward
-- It wasn't a trivial challenge, so there is our solution:
-- If owner wants to change a reward, they should fix and store currently farmed rewards for every provider (users who provided LP)
-- So owner manually queries all user wallets with LP funds in the contract (by `getProviders` or `getProvider` + `providerCount`)
-- Then owner must send `fixRewards(address[])` with these addresses (by one tx or with bunches – depends on wallet count and so gas amount)
-- Only then owner should send `changeClnyPerSecond` with new reward value
-- ^ The way above is safe for users' rewards
-- Seconds and minutes between `fixRewards` and `changeClnyPerSecond` doesn't matter and are considered as acceptable errors
-- Hours and days between `fixRewards` and `changeClnyPerSecond` are unacceptable – such a big timeout will affect each provider differently and lead to unfair distribution
-- If an owner sends `changeClnyPerSecond` without having fixed rewards recently, a wrong reward estimation occurs: contract would take in account rewards for each wallet from last fixing rewards/deposit or withdraw of the wallet
-- This consequence is a must, but isn't validated in the contract as it could take much gas, so owner has to be wise and act accurately. Users trust an owner (I hope)
-- At least owner can spoil CLNY rewards estimation, but LP tokens can always be withdrawn in original amounts and are safely kept for users in the contract
 
 # Technical details
 - The contract is deployed to Harmony network, ISN'T upgradeable and verified

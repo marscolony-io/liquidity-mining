@@ -37,13 +37,8 @@ contract('Restrictions', (accounts) => {
     await chef.deposit(ether('10'), { from: user1 });
   });
 
-  it('Fix rewards - ownable', async () => {
-    time.increase(60 * 60 * 24);
-    await chef.fixRewards([user1, user2, user3], { from: ownerOfAll });
-    await expectRevert(chef.fixRewards([user1, user2, user3], { from: user1 }), 'caller is not the owner');
-  });
-
   it('changeClnyPerSecond - ownable', async () => {
+    time.increase(60 * 60 * 24);
     time.increase(60 * 60 * 24);
     await chef.changeClnyPerSecond(ether('3'), { from: ownerOfAll });
     await expectRevert(chef.changeClnyPerSecond(ether('5'), { from: user1 }), 'caller is not the owner');

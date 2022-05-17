@@ -81,8 +81,6 @@ contract('Changing price and staking', (accounts) => {
     const providers = await chef.getProviders();
     assert(providers.length === 5);
     assert(providers.includes(user1) && providers.includes(user2) && providers.includes(user3) && providers.includes(user4) && providers.includes(user5));
-    // A MUST! Fix rewards for all providers manually before changing speed
-    await chef.fixRewards(providers);
     await chef.changeClnyPerSecond(ether(new BN(1000)).div(new BN(86400)), { gas: 400_000 });
   });
 
@@ -101,8 +99,6 @@ contract('Changing price and staking', (accounts) => {
     assert(providers.length === 3);
     assert(providers.includes(user1) && providers.includes(user3) && providers.includes(user4));
 
-    // A MUST! Fix rewards for all providers manually before changing speed
-    await chef.fixRewards(providers, { gas: 400_000 });
     await chef.changeClnyPerSecond(ether(new BN(2000)).div(new BN(86400)), { gas: 400_000 });
   });
 
@@ -112,18 +108,12 @@ contract('Changing price and staking', (accounts) => {
     assert(providers.length === 3);
     assert(providers.includes(user1) && providers.includes(user3) && providers.includes(user4));
 
-    // A MUST! Fix rewards for all providers manually before changing speed
-    await chef.fixRewards(providers);
     await chef.changeClnyPerSecond(ether('0'), { gas: 400_000 });
-    await chef.fixRewards(providers, { gas: 400_000 });
     // await chef.changeClnyPerSecond(ether('1'), { gas: 400_000 });
-    // await chef.fixRewards(providers);
     // await chef.changeClnyPerSecond(ether('0'), { gas: 400_000 });
-    // await chef.fixRewards(providers);
 
     await chef.withdraw(0, { from: user1, gas: 400_000 });
 
-    await chef.fixRewards(providers, { gas: 400_000 });
     console.log(await chef.pendingClny(user1))
     console.log(await chef.pendingClny(user2))
     console.log(await chef.pendingClny(user3))

@@ -54,7 +54,6 @@ contract ColonyChef is Ownable {
     event Deposit(address indexed user, uint256 amount);
     event Withdraw(address indexed user, uint256 amount);
     event EmergencyWithdraw(address indexed user, uint256 amount);
-    event FixRewards(address indexed user, uint256 amount);
     event SetClnyPerSecond(uint256 amount);
 
     constructor(
@@ -152,21 +151,8 @@ contract ColonyChef is Ownable {
         emit Withdraw(msg.sender, _amount);
     }
 
-    // store users' rewards without transferring them
-    // needed before changing clny per day speed
-    function fixRewards(address[] calldata addresses) external onlyOwner {
-        updatePool();
-        for (uint256 i = 0; i < addresses.length; i++) {
-            UserInfo storage user = userInfo[addresses[i]];
-            user.toPay = user.toPay + user.amount * accColonyPerShare / 1e12 - user.rewardDebt;
-            user.rewardDebt = user.amount * accColonyPerShare / 1e12;
-            emit FixRewards(addresses[i], user.toPay);
-        }
-    }
-
-    // WARNING: you should fix all rewards by fixRewards before changing clnyPerSecond
-    // WARNING: it isn't checked as it would be a gas dependent cycle
     function changeClnyPerSecond(uint256 newSpeed) external onlyOwner {
+        updatePool();
         clnyPerSecond = newSpeed;
         emit SetClnyPerSecond(newSpeed);
     }
