@@ -31,7 +31,7 @@ module.exports = {
       provider: () => {
         return new HDWalletProvider({
           mnemonic: mnemonic.harmain,
-          providerOrUrl: 'https://api.fuzz.fi', // 'https://api.harmony.one',
+          providerOrUrl: 'https://rpc.heavenswail.one', // 'https://api.harmony.one',
           derivationPath: `m/44'/60'/0'/0/`,
           confirmations: 0,
           timeoutBlocks: 200,
@@ -42,7 +42,7 @@ module.exports = {
   },
   compilers: {
     solc: {
-      version: '0.8.11',
+      version: '0.8.13',
       settings: {
         optimizer: {
           enabled: true,
